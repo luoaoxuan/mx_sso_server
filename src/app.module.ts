@@ -7,6 +7,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { UserModule } from './modules/user/user.module';
+import { WechatModule } from './modules/wechat/wechat.module';
 
 // 环境变量
 const envFilePath = ['production.env'];
@@ -59,6 +60,7 @@ if (process.env.NODE_ENV === 'development') {  // 开发环境使用development.
       inject: [ConfigService]
     }),
     UserModule,
+    WechatModule,
     // 其他模块
   ],
   controllers: [AppController],
