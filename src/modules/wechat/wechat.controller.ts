@@ -10,10 +10,21 @@ export class WechatController {
   constructor(private readonly wechatService: WechatService) {}
 
 
- 
   @Get('check')
   checkSignature(@Query() query:WechatParams,@Res() res:Response){
     res.send(this.wechatService.checkSignature(query))
+  } 
+  @Post('check')
+  sendMessage(@Body() res:any){
+    console.log(res);
+    
+  }
+
+  @Get('test')
+  getAccessToken(){
+    console.log('aa');
+    
+    this.wechatService.getAccessToken()
   }
 
 

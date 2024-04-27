@@ -1,5 +1,5 @@
 // src/app.module.ts
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from "@nestjs/config";
@@ -8,7 +8,8 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { UserModule } from './modules/user/user.module';
 import { WechatModule } from './modules/wechat/wechat.module';
-
+import { XMLMiddleware } from "./common/middleware/xml";
+import { WechatController } from './modules/wechat/wechat.controller';
 // 环境变量
 const envFilePath = ['production.env'];
 if (process.env.NODE_ENV === 'development') {  // 开发环境使用development.env变量
@@ -68,4 +69,8 @@ if (process.env.NODE_ENV === 'development') {  // 开发环境使用development.
   exports: [JwtModule]
 })
 
-export class AppModule { }
+export class AppModule implements NestModule{
+  configure(consumer: MiddlewareConsumer){
+    consumer.apply(XMLMiddleware).forRoutes(WechatController)
+  }
+ }

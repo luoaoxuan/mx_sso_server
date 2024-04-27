@@ -6,4 +6,6 @@ import { WechatController } from './wechat.controller';
   controllers: [WechatController],
   providers: [WechatService],
 })
-export class WechatModule {}
+export class WechatModule {
+  
+}
