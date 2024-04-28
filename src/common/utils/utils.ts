@@ -1,6 +1,8 @@
 // src/common/utils/utils.ts
 import * as moment from "moment";
 import * as crypto from "crypto";
+import { create } from "xmlbuilder2";
+
 // 获取当前时间|格式化时间
 export const getTime = (time:number|Date = new Date().getTime(), rule : string = "YYYY-MM-DD HH:mm:ss") : string => {
 	return moment(time).format(rule);
@@ -38,4 +40,24 @@ export const generateRandomString = (length: number) => {
   return crypto.randomBytes(Math.ceil(length / 2))
     .toString('hex') // 将随机字节转换为十六进制字符串
     .slice(0, length); // 保证字符串长度为指定的长度
+}
+
+// 创建xml模版
+export const createXML=(XMLObj:any)=>{
+  const xml=create({
+    xml:XMLObj
+  }).end({ prettyPrint: true, });
+  return xml
+}
+
+// 创建微信回复模版
+export const createWxXML=(type:'text',FromUserName:string,ToUserName:string,message:string)=>{
+  const xml=createXML({
+    ToUserName:{'$':ToUserName},
+    FromUserName:{'$':FromUserName},
+    CreateTime:Date.now(),
+    MsgType:{'$':type},
+    Content:{'$':message}
+  })
+  return xml
 }

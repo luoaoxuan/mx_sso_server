@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, All, Query, UseInterceptors, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, All, Query, UseInterceptors, Res, Req, HttpCode } from '@nestjs/common';
 import { WechatService } from './wechat.service';
 import { CreateWechatDto } from './dto/create-wechat.dto';
 import { UpdateWechatDto } from './dto/update-wechat.dto';
-import { Request ,Response} from 'express';
-
+import { Response} from 'express';
+import { createWxXML } from 'src/common/utils/utils';
 
 @Controller('wechat')
 export class WechatController {
@@ -15,9 +15,10 @@ export class WechatController {
     res.send(this.wechatService.checkSignature(query))
   } 
   @Post('check')
-  sendMessage(@Body() res:any){
-    console.log(res);
-    
+  @HttpCode(200)
+  sendMessage(@Body('xml') body:any,@Res() res:Response){
+    const xml=createWxXML('text',body.ToUserName,body.FromUserName,'你好')
+    res.type('application/xml').send(xml)
   }
 
   @Get('test')
