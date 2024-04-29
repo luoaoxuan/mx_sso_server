@@ -24,40 +24,51 @@ interface TicketParams {
 interface MenuParams {
     button: {
         name: string,
-        sub_button:any[],
+        sub_button: any[],
         // [index: string]: any
     }[]
 }
 
-const menu:MenuParams = {
+const defaultMenu: MenuParams = {
     button: [{
-      name: '测试',
-      sub_button: [
-        {
-          type: "view",
-          name: "慕旋博客",
-          url: "https://www.lax8.com"
-        },
-      ]
+        name: '测试',
+        sub_button: [
+            {
+                type: "view",
+                name: "慕旋博客",
+                url: "https://www.lax8.com"
+            },
+        ]
     }]
-  }
+}
+// const defaultAppData:AccessTokenParams = {
+//     appid: process.env.WX_APPID || '',
+//     secret: process.env.WX_APPSECRET || '',
+//     grant_type: 'client_credential'
+// }
+
+const defaultTicket:TicketParams={
+    action_name:'QR_STR_SCENE',
+    expire_seconds:60*2,
+    scene_str:Date.now()+'-'+Math.floor(Math.random()*1000000)
+}
 
 
 // 获取access_token 
-export const getAccessToken = (data: AccessTokenParams): Promise<AccessTokenResponse> => request.post(API.ACCESS_TOKEN, data)
+export const getAccessToken = (data: AccessTokenParams = {
+    appid: process.env.WX_APPID || '',
+    secret: process.env.WX_APPSECRET || '',
+    grant_type: 'client_credential'
+}): Promise<AccessTokenResponse> => request.post(API.ACCESS_TOKEN, data)
 
 // 生成二维码
-export const createTicket = (data: TicketParams, access_token: string) => request.post(API.TICKET + access_token, data)
+export const createTicket = async (data: TicketParams=defaultTicket, access_token?: string) => {
+    !access_token && (access_token = (await getAccessToken()).access_token)
+    return request.post(API.TICKET + access_token, data)
+}
 
 // 生成自定义菜单
-export const createMenu = async (data: MenuParams=menu, access_token?: string) => {
-    if (!access_token) {
-        const res = await getAccessToken({
-            appid: process.env.WX_APPID || '',
-            secret: process.env.WX_APPSECRET || '',
-            grant_type: 'client_credential'
-        })
-        access_token = res.access_token
-    }
+export const createMenu = async (data: MenuParams = defaultMenu, access_token?: string) => {
+    !access_token && (access_token = (await getAccessToken()).access_token)
     return request.post(API.MENU + access_token, data)
-}
+} 
